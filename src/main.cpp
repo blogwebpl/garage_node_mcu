@@ -334,7 +334,6 @@ void setup()
 	WiFi.disconnect();
 	WiFi.begin(SSID, WIFI_PASSWORD);
 	WiFi.setAutoReconnect(true);
-	WiFi.persistent(true);
 
 	relay.begin(0x11);
 
