@@ -483,11 +483,11 @@ void stateMachine()
 		{
 			debugln("WiFi DISCONNECTED");
 			connectionState = ConnectionState::WIFI_CONNECTING;
-		}
+		} else
 		if (!mqttClient.connected())
 		{
 			debugln("MQTT DISCONNECTED");
-			connectionState = ConnectionState::MQTT_CONNECTING;
+			connectionState = ConnectionState::TIME_SYNCING;
 		}
 		break;
 	}
