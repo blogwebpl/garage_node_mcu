@@ -359,6 +359,8 @@ void setup()
 
 	mqttClient.setServer(MQTT_BROKER, MQTT_PORT);
 	mqttClient.setCallback(mqtt_callback);
+
+	ESP.wdtEnable(15000);
 }
 
 void decrementTimers()
@@ -415,7 +417,6 @@ void stateMachine()
 
 	switch (connectionState)
 	{
-
 	case ConnectionState::WIFI_CONNECTING:
 
 		if (WiFi.status() == WL_CONNECTED)
@@ -482,8 +483,8 @@ void stateMachine()
 		{
 			debugln("WiFi DISCONNECTED");
 			connectionState = ConnectionState::WIFI_CONNECTING;
-		} else
-		if (!mqttClient.connected())
+		}
+		else if (!mqttClient.connected())
 		{
 			debugln("MQTT DISCONNECTED");
 			connectionState = ConnectionState::TIME_SYNCING;
@@ -509,4 +510,5 @@ void loop()
 	gateUpSwitch.loop();
 	decrementTimers();
 	relaysStateControl();
+	ESP.wdtFeed();
 }
