@@ -16,6 +16,7 @@
 #define LIGHT_BUTTON_PIN 14			// D5
 #define GATE_DOWN_SWITCH_PIN 12 // D6
 #define GATE_UP_SWITCH_PIN 13		// D7
+#define LED_PIN 2
 
 #define TIMER_DECREASE_INTERVAL 10
 
@@ -26,7 +27,7 @@
 #define PHOTO_BAYPASS_CHANNEL 0
 
 // debuging functions
-#define DEBUG 0
+#define DEBUG 1
 #if DEBUG == 1
 #define debug(x) Serial.print(x)
 #define debugln(x) Serial.println(x)
@@ -329,6 +330,17 @@ void setup()
 	Serial.begin(250000);
 #endif
 	debugln("START");
+
+	pinMode(LED_PIN, OUTPUT);
+	digitalWrite(LED_PIN, LOW);
+	delay(500);
+	digitalWrite(LED_PIN, HIGH);
+	delay(500);
+	digitalWrite(LED_PIN, LOW);
+	delay(500);
+	digitalWrite(LED_PIN, HIGH);
+	delay(500);
+	digitalWrite(LED_PIN, LOW);
 
 	WiFi.mode(WIFI_STA);
 	WiFi.disconnect();
