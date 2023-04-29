@@ -371,7 +371,7 @@ void setup()
 	mqttClient.setServer(MQTT_BROKER, MQTT_PORT);
 	mqttClient.setCallback(mqtt_callback);
 
-	ESP.wdtEnable(15000);
+	ESP.wdtEnable(1000);
 }
 
 void decrementTimers()
@@ -437,6 +437,10 @@ void stateMachine()
 			IPAddress myIP = WiFi.localIP();
 			Serial.println(myIP);
 #endif
+			ArduinoOTA.onStart([]()
+												 { ESP.wdtEnable(15000); });
+			ArduinoOTA.onEnd([]()
+											 { ESP.wdtEnable(1000); });
 			ArduinoOTA.begin();
 			connectionState = ConnectionState::TIME_SYNCING;
 			debugln("TIME SYNCING");
@@ -544,6 +548,6 @@ void loop()
 	gateUpSwitch.loop();
 	decrementTimers();
 	relaysStateControl();
-	ESP.wdtFeed();
 	blinkLED();
+	ESP.wdtFeed();
 }
