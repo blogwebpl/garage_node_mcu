@@ -116,6 +116,13 @@ Multi_Channel_Relay relay;
 
 Debouncer gateButton, lightButton, gateDownSwitch, gateUpSwitch;
 
+unsigned long previousBlinkSequence = 0;
+#define BLINK_SEQUENCE_INTERVAL 10000
+unsigned long ledInterval = 0;
+bool isLedOn = false;
+int ledBlinkCounter = 0;
+int numberOfBlink = 5;
+
 void sendLightState()
 {
 	if (connectionState != ConnectionState::ONLINE)
@@ -332,15 +339,7 @@ void setup()
 	debugln("START");
 
 	pinMode(LED_PIN, OUTPUT);
-	digitalWrite(LED_PIN, LOW);
-	delay(500);
 	digitalWrite(LED_PIN, HIGH);
-	delay(500);
-	digitalWrite(LED_PIN, LOW);
-	delay(500);
-	digitalWrite(LED_PIN, HIGH);
-	delay(500);
-	digitalWrite(LED_PIN, LOW);
 
 	WiFi.mode(WIFI_STA);
 	WiFi.disconnect();
@@ -436,7 +435,7 @@ void stateMachine()
 			debugln("WiFi CONNECTED");
 #ifdef DEBUG
 			IPAddress myIP = WiFi.localIP();
-			debugln(myIP);
+			Serial.println(myIP);
 #endif
 			ArduinoOTA.begin();
 			connectionState = ConnectionState::TIME_SYNCING;
@@ -505,6 +504,29 @@ void stateMachine()
 	}
 }
 
+void blinkLED()
+{
+	numberOfBlink = static_cast<int>(connectionState) + 1;
+	if (millis() - previousBlinkSequence > BLINK_SEQUENCE_INTERVAL)
+	{
+		if (millis() - ledInterval > 500)
+		{
+			isLedOn = !isLedOn;
+			if (!isLedOn)
+			{
+				ledBlinkCounter++;
+				if (ledBlinkCounter == numberOfBlink)
+				{
+					ledBlinkCounter = 0;
+					previousBlinkSequence = millis();
+				}
+			}
+			digitalWrite(LED_PIN, !isLedOn);
+			ledInterval = millis();
+		}
+	}
+}
+
 void loop()
 {
 	stateMachine();
@@ -523,4 +545,5 @@ void loop()
 	decrementTimers();
 	relaysStateControl();
 	ESP.wdtFeed();
+	blinkLED();
 }
