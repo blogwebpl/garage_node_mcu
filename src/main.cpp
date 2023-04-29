@@ -519,7 +519,7 @@ void blinkLED()
 			if (!isLedOn)
 			{
 				ledBlinkCounter++;
-				if (ledBlinkCounter == numberOfBlink)
+				if (ledBlinkCounter >= numberOfBlink)
 				{
 					ledBlinkCounter = 0;
 					previousBlinkSequence = millis();
