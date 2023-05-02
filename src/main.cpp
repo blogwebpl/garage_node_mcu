@@ -18,6 +18,8 @@
 #define GATE_UP_SWITCH_PIN 13		// D7
 #define LED_PIN 2
 
+#define WDT_TIME WDTO_15MS
+
 #define TIMER_DECREASE_INTERVAL 10
 
 // multi channel relay connections
@@ -371,7 +373,7 @@ void setup()
 	mqttClient.setServer(MQTT_BROKER, MQTT_PORT);
 	mqttClient.setCallback(mqtt_callback);
 
-	ESP.wdtEnable(1000);
+	ESP.wdtEnable(WDT_TIME);
 }
 
 void decrementTimers()
@@ -440,7 +442,7 @@ void stateMachine()
 			ArduinoOTA.onStart([]()
 												 { ESP.wdtEnable(15000); });
 			ArduinoOTA.onEnd([]()
-											 { ESP.wdtEnable(1000); });
+											 { ESP.wdtEnable(WDT_TIME); });
 			ArduinoOTA.begin();
 			connectionState = ConnectionState::TIME_SYNCING;
 			debugln("TIME SYNCING");
@@ -511,6 +513,10 @@ void stateMachine()
 void blinkLED()
 {
 	numberOfBlink = static_cast<int>(connectionState) + 1;
+	if (millis() - previousBlinkSequence > BLINK_SEQUENCE_INTERVAL * 2)
+	{
+		ESP.restart();
+	}
 	if (millis() - previousBlinkSequence > BLINK_SEQUENCE_INTERVAL)
 	{
 		if (millis() - ledInterval > 500)
